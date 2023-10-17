@@ -12,5 +12,7 @@ Please also download this NPV file reader from this public sourced github.
 https://github.com/kwikteam/npy-matlab
 (This is needed for coordinatetransformation function in Project5.m)
 
-The getdepthdata is a ros package that was created by Megha Martin to capture and save all the depth data whilst the Modelnew1_360.bag is running. 
+The getdepthdata is a ros package that was created by Megha Martin to capture and save all the depth data whilst the Modelnew1_360.bag is running.
+
+RUN PROJECT5.M to SEE THE RESULTS!
 
