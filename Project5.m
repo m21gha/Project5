@@ -107,10 +107,10 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
             depth_data = readNPY('depthimagesdepth_image_0.npy');
             
             % Camera intrinsic parameters from the calibrationResults
-            fx = 696.631370276213829
-            fy = 688.430910512066930
-            cx = 343.7744401879735965
-            cy = 304.051147293626400
+            fx = 696.631370276213829;
+            fy = 688.430910512066930;
+            cx = 343.7744401879735965;
+            cy = 304.051147293626400;
             
             % Convert depth image to 3D point cloud
             [height, width] = size(depth_data);
@@ -149,7 +149,6 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
             rgbRawTopics = select(bag1,'Topic', '/camera/color/image_raw');
 
             %Selecting images in the.bag from specfic timestamps from forCali_GroundTruth.txt
-            
             timeStamps = emSensorTime; %make sure you have the emSensorTime in the workspace
             
             % Initialize an array to store the selected images
