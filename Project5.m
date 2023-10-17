@@ -1,20 +1,11 @@
-classdef Project5
-%This is the main class for project 5: 3D reconsutrction using RGB-D camera
-%and EM sensor created by
-%Megha Martin - 14273674
-%Pavlin Rodrigues - 13958044
-%Bhupesh Guddi - 13877446
-
-
+classdef Project5 %This is the main class for project 5: 3D reconsutrction using RGB-D camera
 %#ok<*NASGU>
 %#ok<*NOPRT>
 %#ok<*TRYNC>  
  methods
       function self = Project5()
-          %self.calibration()
-          self.coordinatetransformation()
-          
-                  
+          self.calibration()
+          self.coordinatetransformation()                            
         end
   end
 
@@ -36,7 +27,6 @@ classdef Project5
             emSensorTime = emSensor(:,10);
 
             % Initialize a cell array to store synchronized data
-            %synchronizedData = cell(height(rgbRawTopics.MessageList), 2);
             synchronizedData = cell(height(emSensorTime), 2);
 
                 % Iterate through messages on the image topic
@@ -47,7 +37,7 @@ classdef Project5
                     %imageTimestamp = msg{1}.Header.Stamp.Sec + msg{1}.Header.Stamp.Nsec * 1e-9;
                     imageTimestamp = emSensorTime{i,1};
     
-                    % Find the closest EM sensor pose in the calibration data
+                    %Find the closest EM sensor pose in the calibration data
                     %find the pose at timestap
                     [~, idx] = min(abs(emSensor.Var10 - imageTimestamp));
                     timestampPose = emSensorData(idx, :);
@@ -55,7 +45,6 @@ classdef Project5
                     % Store synchronized data along with the timestamp
                     synchronizedData{i, 1} = imageTimestamp;    % Timestamp from the image message
                     synchronizedData{i, 2} = timestampPose;       % Corresponding EM sensor pose
-                    %emtransformation =  emSensorData(idx, :);
     
                 end
             
@@ -63,12 +52,10 @@ classdef Project5
             calibrationResults = load('Calib_Results.mat');  % Load calibration results
 
             % % Initialize an empty cell array to store calibrated data
-            % calibratedData = cell(length(synchronizedData), 1);
-            
             calibratedTranslations = cell(height(emSensorTime), 1);
             calibratedRotations = cell(height(emSensorTime), 1);
            
-                for i = 1:30           %size(synchronizedData, 1)              
+                for i = 1:30%size(synchronizedData, 1)              
                     T_x = synchronizedData{i,2}.Var16;
                     T_y = synchronizedData{i,2}.Var17;
                     T_z = synchronizedData{i,2}.Var18;
@@ -107,46 +94,37 @@ classdef Project5
     
                 end
 
-                % Calculate the average calibrated translations and rotations
-                avgCalibratedTranslation = mean(cell2mat(calibratedTranslations), 1);
-                avgCalibratedRotation = mean(cell2mat(calibratedRotations), 1);
-
+                %Calculate the average calibrated translations and rotations
+                avgCalibratedTranslation = mean(cell2mat(calibratedTranslations), 1)
+                avgCalibratedRotation = mean(cell2mat(calibratedRotations), 1)
                               
         end
 
 
-
-
         function coordinatetransformation(self)
                 
-            addpath('depthimages\');
-
-            % Load a .npy file (replace 'depth_image_0.npy' with the actual file name)
-            depth_image = readNPY('depthimagesdepth_image_0.npy');
+            % Load a .npy file 
+            depth_data = readNPY('depthimagesdepth_image_0.npy');
             
-            % Camera intrinsic parameters (replace with your actual values)
-
+            % Camera intrinsic parameters from the calibrationResults
             fx = 696.631370276213829
             fy = 688.430910512066930
             cx = 343.7744401879735965
             cy = 304.051147293626400
             
             % Convert depth image to 3D point cloud
-            [height, width] = size(depth_image);
+            [height, width] = size(depth_data);
             [Y, X] = ndgrid(1:height, 1:width);
-            Z = double(depth_image) / 1000.0;  % Convert depth to meters
+            Z = double(depth_data) / 1000.0;  % Convert depth to meters
             X_3D = (X - cx) .* Z / fx;
             Y_3D = (Y - cy) .* Z / fy;
             
             % Create a 3D point cloud
             point_cloud = cat(3, X_3D, Y_3D, Z);
-            
-            % Load your point cloud data into the point_cloud variable (replace with your data)
-
-            % Create a figure
-            figure;
+           
             
             % Display the point cloud using pcshow
+            figure;
             pcshow(point_cloud);
             
             % Customize the point cloud visualization (optional)
@@ -155,18 +133,11 @@ classdef Project5
             ylabel('Y-axis');
             zlabel('Z-axis');
             
-            % Set the viewing angle (optional)
             view(0, -90); % Adjust the view as needed
 
             end
 
 
-
-
-         
-            
-
-            
 
     function calibrationToolbox()
             
