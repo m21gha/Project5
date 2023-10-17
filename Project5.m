@@ -11,7 +11,8 @@ classdef Project5
 %#ok<*TRYNC>  
  methods
       function self = Project5()
-          self.calibration()
+          %self.calibration()
+          self.coordinatetransformation()
           
                   
         end
@@ -28,7 +29,7 @@ classdef Project5
             rgbRawTopics = select(bag1,'Topic', '/camera/color/image_raw');
 
             %read in TSV file
-            emSensor = readtable('/Documents/Sensors and Control/Group Project/bags/forCali_GroundTruth_new360.txt');
+            emSensor = readtable('forCali_GroundTruth_new360.txt');
             %selecting the Rz	Ry	Rx	Tx	Ty	Tz data
             emSensorData = emSensor(:,13:18);
             %time
@@ -110,44 +111,57 @@ classdef Project5
                 avgCalibratedTranslation = mean(cell2mat(calibratedTranslations), 1);
                 avgCalibratedRotation = mean(cell2mat(calibratedRotations), 1);
 
-                                
-                                                        
-
-
+                              
         end
 
 
 
-            function dataAcquisition(self)
 
-                %Capture data from both the RGB-D
-                % camera and the EM sensor simultaneously.
-                % Topics to subscribe to may include color images, depth images,
-                % EM sensor data, and camera transforms.
-
-            end
-
-            function poseEstimation()
+        function coordinatetransformation(self)
                 
-                % Generate point clouds from the RGB-D camera data. 
-                % You'll obtain both RGB data and depth data.
-                % Fuse the RGB and depth data to create 3D point clouds for each frame.
+            addpath('depthimages\');
+
+            % Load a .npy file (replace 'depth_image_0.npy' with the actual file name)
+            depth_image = readNPY('depthimagesdepth_image_0.npy');
+            
+            % Camera intrinsic parameters (replace with your actual values)
+
+            fx = 696.631370276213829
+            fy = 688.430910512066930
+            cx = 343.7744401879735965
+            cy = 304.051147293626400
+            
+            % Convert depth image to 3D point cloud
+            [height, width] = size(depth_image);
+            [Y, X] = ndgrid(1:height, 1:width);
+            Z = double(depth_image) / 1000.0;  % Convert depth to meters
+            X_3D = (X - cx) .* Z / fx;
+            Y_3D = (Y - cy) .* Z / fy;
+            
+            % Create a 3D point cloud
+            point_cloud = cat(3, X_3D, Y_3D, Z);
+            
+            % Load your point cloud data into the point_cloud variable (replace with your data)
+
+            % Create a figure
+            figure;
+            
+            % Display the point cloud using pcshow
+            pcshow(point_cloud);
+            
+            % Customize the point cloud visualization (optional)
+            title('3D Point Cloud Visualization');
+            xlabel('X-axis');
+            ylabel('Y-axis');
+            zlabel('Z-axis');
+            
+            % Set the viewing angle (optional)
+            view(0, -90); % Adjust the view as needed
+
             end
 
-            function pointCloudGeneration()
-                
-                % Generate point clouds from the RGB-D camera data. 
-                % You'll obtain both RGB data and depth data.
-                % Fuse the RGB and depth data to create 3D point clouds for each frame.
-            end
 
 
-            function coordinateTransformation()
-               
-                % Transform the point clouds from the 
-                % camera's frame to the global EM field generator coordinate frame.
-                % This step aligns all the point clouds in a common global frame
-            end
 
          
             
@@ -170,15 +184,11 @@ classdef Project5
             % Initialize an array to store the selected images
             selectedImages = cell(height(timeStamps), 1);
 
-            %%
-
             % Calculate the conversion factor
             conversionFactor = rgbRawTopics.MessageList{1, 'Time'} / timeStamps{1, 1};
             
             % Scale the timestamps in timeStamps
             timeStamps{:, 1} = timeStamps{:, 1} * conversionFactor;
-
-            %%
             
             % Iterate through the messages to extract images at the specified timestamps
             for i = 1:height(timeStamps)
