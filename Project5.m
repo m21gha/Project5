@@ -4,7 +4,7 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
 %#ok<*TRYNC>  
  methods
       function self = Project5()
-          self.calibration()
+          %self.calibration()
           self.coordinatetransformation()
           self.displayComparisonImages()
           self.fusedPointCloud()
@@ -167,12 +167,12 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
 
 
          function fusedPointCloud(~)
-    
-            % Define the directory where your filtered depth data is stored
-            dataDir = 'F:\UTS\2023 subjects\2023 Semester 2 Spring\Sensors and Control for Mechatronic Systems\Group Project\Github\Project5\Datas\outlierRemovedDepthData';  % Replace with the actual directory
+            
+             % Define the directory where your filtered depth data is stored
+            filteredDataDir = 'F:\UTS\2023 subjects\2023 Semester 2 Spring\Sensors and Control for Mechatronic Systems\Group Project\Github\Project5\Datas\outlierRemovedDepthData';  % Replace with the actual directory
         
-            % List all .npy files in the directory
-            filteredDepthFiles = dir(fullfile(dataDir, '*.npy'));
+            % List all .npy files in the filtered data directory
+            filteredDepthFiles = dir(fullfile(filteredDataDir, '*.npy'));
             
             %Define the directory where your depth data files are stored
             depthdataDir = 'F:\UTS\2023 subjects\2023 Semester 2 Spring\Sensors and Control for Mechatronic Systems\Group Project\Github\Project5\Datas\depthdata'; % Replace with the actual directory  
@@ -205,12 +205,36 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
                 % Merge the current point cloud with the fused point cloud
                 fusedPointCloud = pcmerge(fusedPointCloud, currentPointCloud, 0.001); % Adjust the merge threshold
             end
+
+        
+            % Display the fused point cloud
+            figure;
+            pcshow(fusedPointCloud); %CHANGE THE COLOUR OF THE IMAGE OR ITS ALL JUST BLACK
+            title('Fused 3D Point Cloud');
+            
+            % Load and merge filtered depth data
+            for i = 1:numel(filteredDepthFiles)
+                % Load the filtered depth data from the filtered data directory
+                filtered_depth_data = readNPY(fullfile(filteredDataDir, filteredDepthFiles(i).name));
+        
+                % Convert filtered depth image to 3D point cloud
+                [height, width] = size(filtered_depth_data);
+                [Y, X] = ndgrid(1:height, 1:width);
+                Z = double(filtered_depth_data) / 1000.0;  % Convert depth to meters
+                X_3D = (X - cx) .* Z / fx;
+                Y_3D = (Y - cy) .* Z / fy;
+        
+                % Create a 3D point cloud from the current filtered depth data
+                currentPointCloud = pointCloud(cat(3, X_3D, Y_3D, Z), 'Color', uint8(ones(height, width, 3)));
+        
+                % Merge the current point cloud with the fused point cloud
+                fusedPointCloud = pcmerge(fusedPointCloud, currentPointCloud, 0.001); % Adjust the merge threshold
+            end
         
             % Display the fused point cloud
             figure;
             pcshow(fusedPointCloud);
             title('Fused 3D Point Cloud');
-        
     
         end   
 
