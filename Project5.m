@@ -209,7 +209,9 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
         
             % Display the fused point cloud
             figure;
-            pcshow(fusedPointCloud); %CHANGE THE COLOUR OF THE IMAGE OR ITS ALL JUST BLACK
+            pcshow(fusedPointCloud);
+            fig = gcf; 
+            fig.Color = 'white';
             title('Fused 3D Point Cloud');
             
             % Load and merge filtered depth data
@@ -234,6 +236,8 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
             % Display the fused point cloud
             figure;
             pcshow(fusedPointCloud);
+            fig = gcf; 
+            fig.Color = 'white';
             title('Fused 3D Point Cloud');
     
         end   
@@ -241,7 +245,7 @@ classdef Project5 %This is the main class for project 5: 3D reconsutrction using
         
 
 %%
-        function noiseReductionAndSace()
+        function noiseReductionAndSave()
 
             % Specify the folder where your depth data files are located
             data_folder = 'F:\UTS\2023 subjects\2023 Semester 2 Spring\Sensors and Control for Mechatronic Systems\Group Project\Github\Project5\Datas\depthdata';
