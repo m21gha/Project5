@@ -1,4 +1,4 @@
-# Project5
+# Project5: 3D reconstruction using RGB-D camera and EM Senor
 
 by Megha, Pavlin, Bhupesh
 
